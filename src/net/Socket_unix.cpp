@@ -12,8 +12,6 @@
 #include <errno.h>
 #include <string>
 
-using namespace std;
-
 struct SocketData
 {
 	int sock;
@@ -93,7 +91,7 @@ Socket::Socket(int socketType, IPV4 addr)
 		SocketData * sock = (SocketData*)skt;
 		sock->dest.sin_family = AF_INET;
 		sock->dest.sin_port = htons(addr.port);
-		string sAddr = addr.getHostString();
+		std::string sAddr = addr.getHostString();
 		int ret = inet_aton(sAddr.c_str(), &sock->dest.sin_addr);
 		if (ret == 0)
 		{
@@ -318,7 +316,7 @@ bool Socket::send( const Packet& p )
 	sockaddr_in addr;
 	if (!p.addr.isEmpty())
 	{
-		string saddr = p.addr.getHostString();
+		std::string saddr = p.addr.getHostString();
 		memset(&addr.sin_zero, 0, sizeof(addr.sin_zero));
 		addr.sin_family = AF_INET;
 		addr.sin_addr.s_addr = inet_addr( saddr.c_str() );

@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#ifdef WIN32
 #pragma comment(linker, "/EXPORT:GiveFnptrsToDll=_GiveFnptrsToDll@8")
 #pragma comment(linker, "/SECTION:.data,RW")
+#endif // WIN32
 
 // Must provide at least one of these..
 static META_FUNCTIONS gMetaFunctionTable = {
@@ -46,7 +48,7 @@ int g_mod_api;
 // UTIL_LogPrintf - Prints a logged message to console.
 // Preceded by LOG: ( timestamp ) < message >
 //=========================================================
-void UTIL_LogPrintf(char* fmt, ...)
+void UTIL_LogPrintf(const char* fmt, ...)
 {
 	va_list			argptr;
 	static char		string[1024];

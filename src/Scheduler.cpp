@@ -1,15 +1,13 @@
 #include "Scheduler.h"
 #include "meta_utils.h"
 
-using namespace std;
-
 Scheduler g_Scheduler;
 unsigned int g_schedule_id = 1;
 
 void Scheduler::Think() {
     float now = g_engfuncs.pfnTime();
 
-    vector<function<void()>> funcsToCall;
+    std::vector<std::function<void()>> funcsToCall;
 
     for (int i = 0; i < functions.size(); i++) {
         ScheduledFunction_internal& func = functions[i];
@@ -44,7 +42,7 @@ void Scheduler::RemoveTimer(ScheduledFunction sched) {
     }
 }
 
-bool ScheduledFunction::HasBeenRemoved() {
+bool ScheduledFunction::HasBeenRemoved() const {
     for (int i = 0; i < g_Scheduler.functions.size(); i++) {
         if (g_Scheduler.functions[i].scheduleId == scheduleId) {
             return false;

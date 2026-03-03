@@ -2,11 +2,9 @@
 #include "misc_utils.h"
 #include <chrono>
 
-using namespace std;
-
 const char* ADMIN_LIST_FILE = "svencoop/admins.txt";
 
-map<string, int> g_admins;
+std::map<std::string, int> g_admins;
 
 #define MAX_CVARS 32
 
@@ -33,11 +31,11 @@ cvar_t* RegisterCVar(char* name, char* strDefaultValue, int intDefaultValue, int
 	return CVAR_GET_POINTER(name);
 }
 
-bool cgetline(FILE* file, string& output) {
+bool cgetline(FILE* file, std::string& output) {
 	static char buffer[4096];
 
 	if (fgets(buffer, sizeof(buffer), file)) {
-		output = string(buffer);
+		output = std::string(buffer);
 		if (output[output.length() - 1] == '\n') {
 			output = output.substr(0, output.length() - 1);
 		}
@@ -53,13 +51,13 @@ void LoadAdminList() {
 	FILE* file = fopen(ADMIN_LIST_FILE, "r");
 
 	if (!file) {
-		string text = string("[PortalSpawner] Failed to open: ") + ADMIN_LIST_FILE + "\n";
+		std::string text = std::string("[PortalSpawner] Failed to open: ") + ADMIN_LIST_FILE + "\n";
 		println(text);
 		logln(text);
 		return;
 	}
 
-	string line;
+	std::string line;
 	while (cgetline(file, line)) {
 		if (line.empty()) {
 			continue;
@@ -67,7 +65,7 @@ void LoadAdminList() {
 
 		// strip comments
 		int endPos = line.find_first_of(" \t#/\n");
-		string steamId = trimSpaces(line.substr(0, endPos));
+		std::string steamId = trimSpaces(line.substr(0, endPos));
 
 		if (steamId.length() < 1) {
 			continue;
@@ -89,7 +87,7 @@ void LoadAdminList() {
 }
 
 int AdminLevel(edict_t* plr) {
-	string steamId = (*g_engfuncs.pfnGetPlayerAuthId)(plr);
+	std::string steamId = (*g_engfuncs.pfnGetPlayerAuthId)(plr);
 
 	if (!IS_DEDICATED_SERVER()) {
 		if (ENTINDEX(plr) == 1) {
@@ -113,10 +111,10 @@ void CommandArgs::loadArgs() {
 	std::string firstArgLower = toLowerCase(CMD_ARGV(0));
 	isConsoleCmd = firstArgLower != "say" && firstArgLower != "say_team";
 
-	string argStr = CMD_ARGC() > 1 ? CMD_ARGS() : "";
+	std::string argStr = CMD_ARGC() > 1 ? CMD_ARGS() : "";
 
 	if (isConsoleCmd) {
-		argStr = CMD_ARGV(0) + string(" ") + argStr;
+		argStr = CMD_ARGV(0) + std::string(" ") + argStr;
 	}
 
 	if (!isConsoleCmd && argStr.length() > 2 && argStr[0] == '\"' && argStr[argStr.length() - 1] == '\"') {
@@ -155,7 +153,7 @@ void CommandArgs::loadArgs() {
 	}
 }
 
-string CommandArgs::ArgV(int idx) {
+std::string CommandArgs::ArgV(int idx) {
 	if (idx >= 0 && idx < args.size()) {
 		return args[idx];
 	}
@@ -167,8 +165,8 @@ int CommandArgs::ArgC() {
 	return args.size();
 }
 
-string CommandArgs::getFullCommand() {
-	string str = ArgV(0);
+std::string CommandArgs::getFullCommand() {
+	std::string str = ArgV(0);
 
 	for (int i = 1; i < args.size(); i++) {
 		str += " " + args[i];
@@ -177,10 +175,8 @@ string CommandArgs::getFullCommand() {
 	return str;
 }
 
-using namespace std::chrono;
-
 uint64_t getEpochMillis() {
-	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 double TimeDifference(uint64_t start, uint64_t end) {

@@ -32,11 +32,11 @@ struct UserInfo {
 
 	void setInfo(char* infoString);
 
-	std::string infoString();
+	std::string infoString() const;
 
 	// send info only to one player
-	void send(edict_t* target);
+	void send(edict_t* target) const;
 
 	// send info to everyone
-	void broadcast();
+	void broadcast() const;
 };

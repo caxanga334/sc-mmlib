@@ -1,7 +1,5 @@
 #include "ThreadSafeInt.h"
 
-using namespace std;
-
 int ThreadSafeInt::getValue() {
 	mutex.lock();
 	int ret = value;

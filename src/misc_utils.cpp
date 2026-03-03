@@ -22,13 +22,14 @@
 typedef EHANDLE EHandle;
 #endif
 
-using namespace std;
+#undef max
+#undef min
 
-thread::id g_main_thread_id = std::this_thread::get_id();
-ThreadSafeQueue<string> g_thread_prints;
-ThreadSafeQueue<string> g_thread_logs;
+std::thread::id g_main_thread_id = std::this_thread::get_id();
+ThreadSafeQueue<std::string> g_thread_prints;
+ThreadSafeQueue<std::string> g_thread_logs;
 
-string getFileExtension(string fpath) {
+std::string getFileExtension(std::string fpath) {
 	int dot = fpath.find_last_of(".");
 	if (dot != -1 && dot < fpath.size()-1) {
 		return fpath.substr(dot + 1);
@@ -37,12 +38,12 @@ string getFileExtension(string fpath) {
 	return "";
 }
 
-string getPlayerUniqueId(edict_t* plr) {
+std::string getPlayerUniqueId(edict_t* plr) {
 	if (plr == NULL) {
 		return "STEAM_ID_NULL";
 	}
 
-	string steamId = (*g_engfuncs.pfnGetPlayerAuthId)(plr);
+	std::string steamId = (*g_engfuncs.pfnGetPlayerAuthId)(plr);
 
 	if (steamId == "STEAM_ID_LAN" || steamId == "BOT") {
 		steamId = STRING(plr->v.netname);
@@ -52,7 +53,7 @@ string getPlayerUniqueId(edict_t* plr) {
 }
 
 uint64_t getPlayerCommunityId(edict_t* plr) {
-	string id = getPlayerUniqueId(plr);
+	std::string id = getPlayerUniqueId(plr);
 
 	if (id == "STEAM_ID_NULL" || id == "STEAM_ID_LAN" || id == "BOT") {
 		return 0;
@@ -61,9 +62,9 @@ uint64_t getPlayerCommunityId(edict_t* plr) {
 	return steamid_to_steamid64(id);
 }
 
-string replaceString(string subject, string search, string replace) {
+std::string replaceString(std::string subject, std::string search, std::string replace) {
 	size_t pos = 0;
-	while ((pos = subject.find(search, pos)) != string::npos)
+	while ((pos = subject.find(search, pos)) != std::string::npos)
 	{
 		subject.replace(pos, search.length(), replace);
 		pos += replace.length();
@@ -71,9 +72,9 @@ string replaceString(string subject, string search, string replace) {
 	return subject;
 }
 
-vector<string> splitString(string str, const char* delimitters)
+std::vector<std::string> splitString(std::string str, const char* delimitters)
 {
-	vector<string> split;
+	std::vector<std::string> split;
 	size_t start = 0;
 	size_t end = str.find_first_of(delimitters);
 
@@ -89,7 +90,7 @@ vector<string> splitString(string str, const char* delimitters)
 	return split;
 }
 
-edict_t* getPlayerByUniqueId(string id) {
+edict_t* getPlayerByUniqueId(std::string id) {
 	for (int i = 1; i <= gpGlobals->maxClients; i++) {
 		edict_t* ent = INDEXENT(i);
 
@@ -121,7 +122,7 @@ edict_t* getPlayerByUserId(int id) {
 	return NULL;
 }
 
-edict_t* getPlayerByName(edict_t* caller, string name, bool printError) {
+edict_t* getPlayerByName(edict_t* caller, std::string name, bool printError) {
 	name = toLowerCase(name);
 	int partialMatches = 0;
 	edict_t* partialMatch;
@@ -133,9 +134,9 @@ edict_t* getPlayerByName(edict_t* caller, string name, bool printError) {
 			continue;
 		}
 
-		const string steamId = toLowerCase(getPlayerUniqueId(plr));
+		const std::string steamId = toLowerCase(getPlayerUniqueId(plr));
 
-		string plrName = toLowerCase(STRING(plr->v.netname));
+		std::string plrName = toLowerCase(STRING(plr->v.netname));
 		if (plrName == name || steamId == name)
 			return plr;
 		else if (plrName.find(name) != -1)
@@ -163,14 +164,14 @@ bool isValidPlayer(edict_t* plr) {
 	return plr && (plr->v.flags & FL_CLIENT) != 0 && (plr->v.flags & FL_PROXY) == 0 && STRING(plr->v.netname)[0] != '\0';
 }
 
-string trimSpaces(string s) {
+std::string trimSpaces(std::string s) {
 	int start = s.find_first_not_of(" \t\n\r");
 	int end = s.find_last_not_of(" \t\n\r");
-	return (start == string::npos) ? "" : s.substr(start, end - start + 1);
+	return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
-string toLowerCase(string str) {
-	string out = str;
+std::string toLowerCase(std::string str) {
+	std::string out = str;
 
 	for (int i = 0; str[i]; i++) {
 		out[i] = tolower(str[i]);
@@ -179,8 +180,8 @@ string toLowerCase(string str) {
 	return out;
 }
 
-string toUpperCase(string str) {
-	string out = str;
+std::string toUpperCase(std::string str) {
+	std::string out = str;
 
 	for (int i = 0; str[i]; i++) {
 		out[i] = toupper(str[i]);
@@ -189,7 +190,7 @@ string toUpperCase(string str) {
 	return out;
 }
 
-string vecToString(Vector vec) {
+std::string vecToString(Vector vec) {
 	return UTIL_VarArgs("%f, %f, %f", vec.x, vec.y, vec.z);
 }
 
@@ -216,14 +217,14 @@ void ClientPrint(edict_t* client, int msg_dest, const char* msg_name, const char
 	MESSAGE_END();
 }
 
-void clientCommand(edict_t* plr, string cmd, int destType) {
+void clientCommand(edict_t* plr, std::string cmd, int destType) {
 	MESSAGE_BEGIN(destType, 9, NULL, plr);
 	WRITE_STRING(UTIL_VarArgs(";%s;", cmd.c_str()));
 	MESSAGE_END();
 }
 
 void handleThreadPrints() {
-	string msg;
+	std::string msg;
 	for (int failsafe = 0; failsafe < 128; failsafe++) {
 		if (g_thread_prints.dequeue(msg)) {
 			println(msg.c_str());
@@ -322,7 +323,7 @@ void HudMessageAll(const hudtextparms_t& textparms, const char* pMessage, int de
 	HudMessage(NULL, textparms, pMessage, dest);
 }
 
-char* UTIL_VarArgs(char* format, ...)
+char* UTIL_VarArgs(const char* format, ...)
 {
 	va_list		argptr;
 	static char		string[1024];
@@ -334,7 +335,7 @@ char* UTIL_VarArgs(char* format, ...)
 	return string;
 }
 
-CBaseEntity* CreateEntity(const char* cname, map<string, string> keyvalues, bool spawn) {
+CBaseEntity* CreateEntity(const char* cname, std::map<std::string, std::string> keyvalues, bool spawn) {
 	// using MAKE_STRING would crash the game when unloading this plugin (pointer to invalid memory).
 	// That's true even if deleting the entities in PLuginExit
 	edict_t* ent = g_engfuncs.pfnCreateNamedEntity(ALLOC_STRING(cname));
@@ -343,7 +344,7 @@ CBaseEntity* CreateEntity(const char* cname, map<string, string> keyvalues, bool
 		return NULL;
 	}
 
-	for (auto item : keyvalues) {
+	for (auto& item : keyvalues) {
 		KeyValueData dat;
 		dat.fHandled = false;
 		dat.szClassName = (char*)STRING(ent->v.classname);
@@ -485,7 +486,8 @@ CBaseEntity* FindEntityForward(CBaseEntity* ent, float maxDist) {
 	if (!ent) {
 		return NULL;
 	}
-	maxDist = Min(maxDist, 12048); // according to angelscript docs
+
+	maxDist = std::min(maxDist, 12048.0f); // according to angelscript docs
 
 	// TODO: check how monsters are handled (angles instead of v_angle?)
 
@@ -543,11 +545,11 @@ void RemoveEntity(edict_t* ent) {
 	}
 }
 
-void RelaySay(string message) {
+void RelaySay(std::string message) {
 	message.erase(std::remove(message.begin(), message.end(), '\n'), message.end()); // stip any newlines, ChatBridge.as takes care
 	replaceString(message, "\"", "'"); // replace quotes so cvar is set correctly
 
-	logln(string("[RelaySay ") + Plugin_info.name + "]: " + message + "\n");
+	logln(std::string("[RelaySay ") + Plugin_info.name + "]: " + message + "\n");
 
 	g_engfuncs.pfnCVarSetString("relay_say_msg", message.c_str());
 	g_engfuncs.pfnServerCommand(UTIL_VarArgs("as_command .relay_say %s\n", Plugin_info.name));
@@ -584,7 +586,7 @@ void kickPlayer(edict_t* ent, const char* reason) {
 	g_engfuncs.pfnServerExecute();
 }
 
-uint64_t steamid_to_steamid64(const string& steamid) {
+uint64_t steamid_to_steamid64(const std::string& steamid) {
 	if (steamid.size() <= 10) {
 		return 0;
 	}
@@ -601,14 +603,14 @@ uint64_t steamid_to_steamid64(const string& steamid) {
 	return steam64id;
 }
 
-string steamid64_to_steamid(uint64_t steam64) {
+std::string steamid64_to_steamid(uint64_t steam64) {
 	steam64 -= 76561197960265728;
 
 	if (steam64 & 1) {
-		return "STEAM_0:1:" + to_string((steam64 - 1) / 2);
+		return "STEAM_0:1:" + std::to_string((steam64 - 1) / 2);
 	}
 	
-	return "STEAM_0:0:" + to_string(steam64 / 2);
+	return "STEAM_0:0:" + std::to_string(steam64 / 2);
 }
 
 uint64_t getFileModifiedTime(std::string path) {
@@ -620,7 +622,7 @@ uint64_t getFileModifiedTime(std::string path) {
 	return 0;
 }
 
-void winPath(string& path) {
+void winPath(std::string& path) {
 	for (int i = 0, size = path.size(); i < size; i++)
 	{
 		if (path[i] == '/')
@@ -628,9 +630,9 @@ void winPath(string& path) {
 	}
 }
 
-vector<string> getDirFiles(string path, string extension, string startswith, bool onlyOne)
+std::vector<std::string> getDirFiles(std::string path, std::string extension, std::string startswith, bool onlyOne)
 {
-	vector<string> results;
+	std::vector<std::string> results;
 
 #if defined(WIN32) || defined(_WIN32)
 	path = path + startswith + "*." + extension;
@@ -677,8 +679,8 @@ vector<string> getDirFiles(string path, string extension, string startswith, boo
 		if (entry->d_type == DT_DIR)
 			continue;
 
-		string name = string(entry->d_name);
-		string lowerName = toLowerCase(name);
+		std::string name = std::string(entry->d_name);
+		std::string lowerName = toLowerCase(name);
 
 		if (extension.size() > name.size() || startswith.size() > name.size())
 			continue;

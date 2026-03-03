@@ -1,7 +1,5 @@
 #include "UserInfo.h"
 
-using namespace std;
-
 
 UserInfo::UserInfo() {}
 
@@ -35,7 +33,7 @@ void UserInfo::setInfo(char* info) {
 	model = INFOKEY_VALUE(info, "model");
 }
 
-string UserInfo::infoString() {
+std::string UserInfo::infoString() const {
 	return "\\cl_lw\\" + cl_lw
 		+ "\\cl_lc\\" + cl_lc
 		+ "\\bottomcolor\\" + bottomcolor
@@ -52,7 +50,7 @@ string UserInfo::infoString() {
 }
 
 // send info only to one player
-void UserInfo::send(edict_t* target) {
+void UserInfo::send(edict_t* target) const {
 	// SVC_UPDATEUSERINFO
 	MESSAGE_BEGIN(MSG_ONE, SVC_UPDATEUSERINFO, NULL, target);
 	WRITE_BYTE(index); // player index (0 based)
@@ -67,7 +65,7 @@ void UserInfo::send(edict_t* target) {
 }
 
 // send info to everyone
-void UserInfo::broadcast() {
+void UserInfo::broadcast() const {
 	// SVC_UPDATEUSERINFO
 	MESSAGE_BEGIN(MSG_ALL, SVC_UPDATEUSERINFO, NULL, (edict_t*)NULL);
 	WRITE_BYTE(index); // player index (0 based)

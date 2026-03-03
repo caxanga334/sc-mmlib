@@ -2,7 +2,6 @@
 #include "meta_utils.h"
 #include "misc_utils.h"
 
-using namespace std;
 
 TextMenu g_textMenus[MAX_PLAYERS];
 int g_textMenuMsgId = MSG_ShowMenu;
@@ -78,7 +77,7 @@ void TextMenu::handleMenuMessage(int msg_dest, edict_t* ed) {
 		//println("New menu opened for %s", STRING(ed->v.netname));
 		viewers &= ~(PLAYER_BIT(ed));
 	}
-	else if (msg_dest == MSG_ALL || msg_dest == MSG_ALL) {
+	else if (msg_dest == MSG_ALL) {
 		//println("New menu opened for all players");
 		viewers = 0;
 	}
@@ -117,11 +116,11 @@ bool TextMenu::isPaginated() {
 	return numOptions > 9;
 }
 
-void TextMenu::SetTitle(string title) {
+void TextMenu::SetTitle(std::string title) {
 	this->title = title;
 }
 
-void TextMenu::AddItem(string displayText, string optionData) {
+void TextMenu::AddItem(std::string displayText, std::string optionData) {
 	if (numOptions >= MAX_MENU_OPTIONS) {
 		println("Maximum menu options reached! Failed to add: %s", optionData.c_str());
 		return;
@@ -134,7 +133,7 @@ void TextMenu::AddItem(string displayText, string optionData) {
 }
 
 void TextMenu::Open(int8_t duration, int8_t page, edict_t* player) {
-	string menuText = title + "\n\n";
+	std::string menuText = title + "\n\n";
 
 	uint16_t validSlots = (1 << (g_exitOptionNum-1)); // exit option always valid
 
@@ -147,7 +146,7 @@ void TextMenu::Open(int8_t duration, int8_t page, edict_t* player) {
 
 	int addedOptions = 0;
 	for (int i = itemOffset, k = 0; i < itemOffset+limitPerPage && i < numOptions; i++, k++) {
-		menuText += to_string(k+1) + ": " + options[i].displayText + "\n";
+		menuText += std::to_string(k+1) + ": " + options[i].displayText + "\n";
 		validSlots |= (1 << k);
 		addedOptions++;
 	}
@@ -176,7 +175,7 @@ void TextMenu::Open(int8_t duration, int8_t page, edict_t* player) {
 		}
 	}
 
-	menuText += to_string(g_exitOptionNum % 10) + ": Exit";
+	menuText += std::to_string(g_exitOptionNum % 10) + ": Exit";
 
 	if (isValidPlayer(player)) {
 		MESSAGE_BEGIN(MSG_ONE, g_textMenuMsgId, NULL, player);

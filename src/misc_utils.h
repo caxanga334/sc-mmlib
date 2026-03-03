@@ -97,7 +97,7 @@ void HudMessageAll(const hudtextparms_t& textparms, const char* pMessage, int de
 
 void HudMessage(edict_t* pEntity, const hudtextparms_t& textparms, const char* pMessage, int dest = -1);
 
-char* UTIL_VarArgs(char* format, ...);
+char* UTIL_VarArgs(const char* format, ...);
 
 CBaseEntity* CreateEntity(const char* cname, std::map<std::string, std::string> keyvalues= std::map<std::string, std::string>(), bool spawn = true);
 

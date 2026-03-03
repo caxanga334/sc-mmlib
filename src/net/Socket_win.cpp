@@ -1,8 +1,6 @@
 #include "Socket.h"
 #include <ws2tcpip.h>
 
-using namespace std;
-
 addrinfo tcphints = 
 {
 	AI_PASSIVE, // AI_PASSIVE
@@ -89,7 +87,7 @@ Socket::Socket(int socketType, uint16_t port)
 {
 	this->socketType = socketType | SOCKET_SERVER;
 	sendBytes = recvBytes = 0;
-	skt = createSocket(NULL, to_string(port).c_str());
+	skt = createSocket(NULL, std::to_string(port).c_str());
 	if (skt != NULL)
 	{
 		if (bind())
@@ -311,7 +309,7 @@ bool Socket::send( const Packet& p )
 	sockaddr_in addr;
 	if (!p.addr.isEmpty())
 	{
-		string saddr = p.addr.getHostString();
+		std::string saddr = p.addr.getHostString();
 		memset(&addr.sin_zero, 0, sizeof(addr.sin_zero));
 		addr.sin_family = AF_INET;
 		addr.sin_addr.s_addr = inet_addr( saddr.c_str() );

@@ -3,9 +3,8 @@
 #include "misc_utils.h"
 #include "Scheduler.h"
 
-using namespace std;
 
-const string g_soundcache_folder = "svencoop/maps/soundcache/";
+const std::string g_soundcache_folder = "svencoop/maps/soundcache/";
 std::map<std::string, int> g_SoundCache;
 std::vector<std::string> g_SoundCacheFiles;
 std::map<std::string, int> g_SentenceCache;
@@ -125,7 +124,7 @@ void loadSoundCacheFile(int attempts) {
 	g_SentenceCache.clear();
 	g_SentenceCacheNames.clear();
 
-	string soundcache_path = g_soundcache_folder + STRING(gpGlobals->mapname) + ".txt";
+	std::string soundcache_path = g_soundcache_folder + STRING(gpGlobals->mapname) + ".txt";
 	FILE* file = fopen(soundcache_path.c_str(), "r");
 	int soundIdx = 0;
 	int sentenceIdx = 0;
@@ -141,7 +140,7 @@ void loadSoundCacheFile(int attempts) {
 		return;
 	}
 
-	string line;
+	std::string line;
 	int parsemode = PARSE_NONE;
 	while (cgetline(file, line)) {
 		if (line.empty()) {
@@ -160,7 +159,7 @@ void loadSoundCacheFile(int attempts) {
 			parsemode = PARSE_NONE;
 		}
 
-		string lowerLine = toLowerCase(line);
+		std::string lowerLine = toLowerCase(line);
 
 		if (parsemode == PARSE_SOUNDS) {
 			g_SoundCache[lowerLine] = soundIdx;
@@ -168,7 +167,7 @@ void loadSoundCacheFile(int attempts) {
 			soundIdx++;
 		}
 		else if (parsemode == PARSE_SENTENCES) {
-			string name = lowerLine.substr(0, lowerLine.find_first_of(" "));
+			std::string name = lowerLine.substr(0, lowerLine.find_first_of(" "));
 			g_SentenceCache[name] = sentenceIdx;
 			g_SentenceCacheNames.push_back(name);
 			sentenceIdx++;

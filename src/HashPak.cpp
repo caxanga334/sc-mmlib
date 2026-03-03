@@ -9,8 +9,6 @@
 #undef write
 #undef close
 
-using namespace std;
-
 // File layout:
 //   hpk_header_t
 //   lumps[]
@@ -28,7 +26,7 @@ using namespace std;
 //   palette data (3 bytes per index)
 //   wad_lumpinfo_t (4-byte aligned, so there may be 2 empty bytes after the palette)
 
-HashPak::HashPak(string fname) {
+HashPak::HashPak(std::string fname) {
 	this->fname = fname;
 }
 
@@ -106,7 +104,7 @@ void HashPak::readLump(unsigned char* wad_buffer)
     }
 }
 
-string md5Hex(byte md5sum[16]) {
+std::string md5Hex(byte md5sum[16]) {
     std::ostringstream oss;
     for (int i = 0; i < 16; i++)
         oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(md5sum[i]);
@@ -119,7 +117,7 @@ bool HashPak::readData() {
     }
     lumps.clear();
 
-    ifstream fin(fname, ifstream::in | ios::binary);
+    std::ifstream fin(fname, std::ifstream::in | std::ios::binary);
     if (!fin.good()) {
         println("Failed to open: %s", fname.c_str());
         return false;
@@ -166,7 +164,7 @@ bool HashPak::readData() {
 
         wad_header_t* wad_header = (wad_header_t*)lumpData;
         if (strncmp(wad_header->identification, "WAD3", 4)) {
-            println("Skipping lump %d due to bad header: \"%s\"", i, string(wad_header->identification, 4).c_str());
+            println("Skipping lump %d due to bad header: \"%s\"", i, std::string(wad_header->identification, 4).c_str());
             delete[] lumpData;
             continue;
         }
@@ -287,8 +285,8 @@ int HashPak::addDecal(int w, int h, byte* data, byte* palette) {
 }
 
 // load an 8-bit paletted BMP file
-bool loadBMP(const string& filename, vector<uint8_t>& imageBytes, vector<uint8_t>& paletteData, int& width, int& height) {
-    ifstream file(filename, std::ios::binary);
+bool loadBMP(const std::string& filename, std::vector<uint8_t>& imageBytes, std::vector<uint8_t>& paletteData, int& width, int& height) {
+    std::ifstream file(filename, std::ios::binary);
     if (!file) {
         println("Error: Unable to open file: %s", filename.c_str());
         return false;
@@ -313,7 +311,7 @@ bool loadBMP(const string& filename, vector<uint8_t>& imageBytes, vector<uint8_t
 
     // Read palette data
     const size_t paletteSize = header.numColorsUsed * sizeof(uint32_t);
-    vector<uint8_t> tempPalData;
+    std::vector<uint8_t> tempPalData;
     tempPalData.resize(paletteSize);
     file.read(reinterpret_cast<char*>(tempPalData.data()), paletteSize);
 
@@ -352,7 +350,7 @@ bool loadBMP(const string& filename, vector<uint8_t>& imageBytes, vector<uint8_t
     return true;
 }
 
-int HashPak::addDecal(string bmpFile) {
+int HashPak::addDecal(std::string bmpFile) {
     std::vector<uint8_t> imageBytes;
     std::vector<uint8_t> paletteData;
     int width, height;
@@ -402,8 +400,8 @@ void HashPak::listDecals() {
     }
 }
 
-void HashPak::writeFile(string outName) {
-    ofstream fout(outName, ios::out | ios::binary | ios::trunc);
+void HashPak::writeFile(std::string outName) {
+    std::ofstream fout(outName, std::ios::out | std::ios::binary | std::ios::trunc);
 
     int totalLumpsSz = 0;
     for (int i = 0; i < lumps.size(); i++) {

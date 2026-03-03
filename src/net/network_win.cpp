@@ -3,8 +3,6 @@
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
 
-using namespace std;
-
 bool needInit = true;
 
 bool initNet()

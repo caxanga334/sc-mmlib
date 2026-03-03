@@ -25,7 +25,7 @@ struct MessageArg {
 	MessageArg(int argType, float ival);
 	MessageArg(int argType, std::string sval);
 	void writeToCurrentMessage();
-	const char* getString();
+	const char* getString() const;
 };
 
 struct NetMessage {

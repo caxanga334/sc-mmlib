@@ -2,6 +2,7 @@
 #include <extdll.h>
 #include <meta_api.h>
 #include <string>
+#include <string_view>
 
 // use these functions to communicate with the MetaHelper angelscript plugin
 
@@ -32,12 +33,12 @@ void Use(edict_t* target, edict_t* activator, edict_t* caller, int useType);
 // This requires the MetaHelper angelscript plugin to be installed.
 // Do not call this outside of MapInit/ServerActivate.
 // This also includes the PrecacheGeneric call
-void PrecacheSound(std::string snd);
+void PrecacheSound(const std::string& snd);
 
 // the engine function works, but if you recompile the plugin
 // then you'll get a fatal precache error when reloading.
 // Using the sven version of PrecacheModel fixes that.
-void PrecacheModel(std::string mdl);
+void PrecacheModel(const std::string& mdl);
 
 // might not be necessary, needs testing
-void PrecacheGeneric(std::string mdl);
+void PrecacheGeneric(const std::string& mdl);

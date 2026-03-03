@@ -1,8 +1,6 @@
 #include "Packet.h"
 #include <string.h>
 
-using namespace std;
-
 Packet::Packet(const Packet& other) {
 	this->addr = other.addr;
 	this->sz = other.sz;
@@ -10,12 +8,12 @@ Packet::Packet(const Packet& other) {
 	memcpy(this->data, other.data, sz);
 }
 
-Packet::Packet(const string& message)
+Packet::Packet(const std::string& message)
 {
 	init(message);
 }
 
-Packet::Packet(const string& message, IPV4 addr) : addr(addr)
+Packet::Packet(const std::string& message, IPV4 addr) : addr(addr)
 {
 	init(message);
 }
@@ -44,18 +42,18 @@ Packet::~Packet()
 		delete [] data;
 }
 
-string Packet::getString() {
+std::string Packet::getString() {
 	char* outDat = new char[sz + 1];
 	memcpy(outDat, data, sz);
 	outDat[sz] = 0;
 
-	string outStr = outDat;
+	std::string outStr = outDat;
 	delete[] outDat;
 
 	return outStr;
 }
 
-void Packet::init(const string& message)
+void Packet::init(const std::string& message)
 {
 	sz = message.size();
 	data = new char[sz+1];

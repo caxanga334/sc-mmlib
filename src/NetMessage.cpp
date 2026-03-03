@@ -1,8 +1,6 @@
 #include "NetMessage.h"
 #include "misc_utils.h"
 
-using namespace std;
-
 #define SVC_BAD 0
 #define SVC_NOP 1
 #define SVC_DISCONNECT 2
@@ -73,7 +71,7 @@ MessageArg::MessageArg(int argType, float fval) {
 	this->fval = fval;
 }
 
-MessageArg::MessageArg(int argType, string sval) {
+MessageArg::MessageArg(int argType, std::string sval) {
 	this->argType = argType;
 	this->sval = sval;
 }
@@ -111,7 +109,7 @@ void MessageArg::writeToCurrentMessage() {
 	}
 }
 
-const char* MessageArg::getString() {
+const char* MessageArg::getString() const {
 	switch (argType) {
 	case MARG_ANGLE:  return UTIL_VarArgs("WRITE_ANGLE(%ff);", fval);
 	case MARG_BYTE:   return UTIL_VarArgs("WRITE_BYTE(%d);", ival);

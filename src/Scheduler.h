@@ -21,7 +21,7 @@ public:
     ScheduledFunction() {}
     ScheduledFunction(int scheduleId) : scheduleId(scheduleId) {}
 
-    bool HasBeenRemoved();
+    bool HasBeenRemoved() const;
 };
 
 extern unsigned int g_schedule_id; // don't touch this

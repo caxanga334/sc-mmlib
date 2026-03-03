@@ -1,8 +1,6 @@
 #include "IPV4.h"
 #include <stdlib.h>
 
-using namespace std;
-
 IPV4::IPV4() : b1(0), b2(0), b3(0), b4(0), port(0) {}
 
 IPV4::IPV4(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4, uint16_t port)
@@ -13,7 +11,7 @@ IPV4::IPV4(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4 )
 	: b1(b1), b2(b2), b3(b3), b4(b4), port(0) {}
 
 
-int parseOctet(string& s)
+int parseOctet(std::string& s)
 {
 	int dot = s.find_first_of(".");
 	if (dot == -1)
@@ -27,7 +25,7 @@ IPV4::IPV4( const char * addr )
 {
 	b1 = b2 = b3 = b4 = 0;
 	port = 0;
-	string s = addr;
+	std::string s = addr;
 
 	if (s.size() == 0)
 	{
@@ -61,14 +59,14 @@ IPV4::IPV4( const char * addr )
 		b4 = atoi(s.c_str());
 }
 
-string IPV4::getString() const
+std::string IPV4::getString() const
 {
-	return getHostString() + ":" + to_string(port);
+	return getHostString() + ":" + std::to_string(port);
 }
 
-string IPV4::getHostString() const
+std::string IPV4::getHostString() const
 {
-	return to_string(b1) + "." + to_string(b2) + "." + to_string(b3) + "." + to_string(b4);
+	return std::to_string(b1) + "." + std::to_string(b2) + "." + std::to_string(b3) + "." + std::to_string(b4);
 }
 
 bool IPV4::isEmpty() const
